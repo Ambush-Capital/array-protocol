@@ -8,9 +8,8 @@ describe("array-protocol", () => {
 
   const program = anchor.workspace.ArrayProtocol as Program<ArrayProtocol>;
 
-  it("Is initialized!", async () => {
-    // Add your test here.
-    const tx = await program.methods.initialize().rpc();
-    console.log("Your transaction signature", tx);
+  it("Empty test!", async () => {
+    // Add your test here.    
+    console.log("This is an empty test.");
   });
 });

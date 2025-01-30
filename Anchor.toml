@@ -6,12 +6,13 @@ skip-lint = false
 
 [programs.localnet]
 array_protocol = "3mGJZ2tU1Pgnhdy7gN2YRh6eFutwAGxezUmjrDUJFcts"
+drift = "dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
