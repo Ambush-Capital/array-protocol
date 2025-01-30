@@ -1,7 +1,7 @@
 use crate::ix::*;
 use anchor_lang::prelude::*;
 
-declare_id!("3mGJZ2tU1Pgnhdy7gN2YRh6eFutwAGxezUmjrDUJFcts");
+declare_id!("5jNZph2CQjoQcaru3fjkDvXDmMGpnrNAG8CmTyaTdnm9");
 
 declare_program!(drift);
 

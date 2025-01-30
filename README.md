@@ -35,6 +35,8 @@ anchor deploy
 
 5. For local stuff
 COPYFILE_DISABLE=1 solana-test-validator
+Make sure that the version is 3 for Cargo.lock
+solana-keygen pubkey target/deploy/array_protocol-keypair.json
 ```
 
 
