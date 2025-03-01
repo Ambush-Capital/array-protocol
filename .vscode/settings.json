@@ -1,0 +1,32 @@
+{
+  "rust-analyzer.cargo.features": "all",
+  "rust-analyzer.checkOnSave.command": "clippy",
+  "rust-analyzer.checkOnSave.extraArgs": [
+    "--",
+    "-A",
+    "warnings"
+  ],
+  "rust-analyzer.diagnostics.disabled": [
+    "proc-macro-derive-resolution-fallback"
+  ],
+  "rust-analyzer.cargo.allFeatures": true,
+  "rust-analyzer.procMacro.enable": true,
+  "rust-analyzer.cargo.loadOutDirsFromCheck": true,
+  "rust-analyzer.lens.enable": true,
+  "rust-analyzer.lens.methodReferences": true,
+  "rust-analyzer.lens.references": true,
+  "rust-analyzer.lens.implementations": true,
+  "editor.formatOnSave": true,
+  "rust-analyzer.check.command": "clippy",
+  "rust-analyzer.check.extraArgs": [
+    "--",
+    "-A",
+    "warnings"
+  ],
+  "rust-analyzer.server.extraEnv": {
+    "RUSTFLAGS": "-Dwarnings"
+  },
+  "rust-analyzer.linkedProjects": [
+    "./utils/account-extractor/Cargo.toml"
+  ]
+}

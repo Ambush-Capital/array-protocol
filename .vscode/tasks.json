@@ -1,0 +1,94 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build-account-extractor",
+      "type": "shell",
+      "command": "cd utils/account-extractor && cargo build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": [
+        {
+          "owner": "rust",
+          "fileLocation": ["relative", "${workspaceFolder}/utils/account-extractor"],
+          "pattern": {
+            "regexp": "^(.*):(\\d+):(\\d+):\\s+(\\d+):(\\d+)\\s+(warning|error):\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "endLine": 4,
+            "endColumn": 5,
+            "severity": 6,
+            "message": 7
+          }
+        }
+      ]
+    },
+    {
+      "label": "run-account-extractor",
+      "type": "shell",
+      "command": "cd utils/account-extractor && cargo run -- --url ${input:rpcUrl} --program-id ${input:programId} --output-dir ${input:outputDir}",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "test-account-extractor",
+      "type": "shell",
+      "command": "cd utils/account-extractor && cargo test",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "extract-accounts-full",
+      "type": "shell",
+      "command": "make extract-accounts-full",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "run-validator",
+      "type": "shell",
+      "command": "make run-validator",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "rpcUrl",
+      "description": "Solana RPC URL",
+      "default": "https://api.mainnet-beta.solana.com",
+      "type": "promptString"
+    },
+    {
+      "id": "programId",
+      "description": "Program ID to extract accounts from",
+      "default": "dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH",
+      "type": "promptString"
+    },
+    {
+      "id": "outputDir",
+      "description": "Output directory for extracted accounts",
+      "default": "../../fixtures/drift",
+      "type": "promptString"
+    }
+  ]
+} 
