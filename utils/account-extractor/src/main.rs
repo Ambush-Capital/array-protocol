@@ -1,3 +1,35 @@
+//! # Drift Account Extractor
+//!
+//! This tool extracts and transforms Drift accounts from Solana mainnet
+//! to be compatible with a local deployment of the Drift protocol.
+//!
+//! ## Purpose
+//!
+//! When testing Drift locally (especially for CPI operations like deposits
+//! and withdrawals to USDC vaults), we need to:
+//!
+//! 1. Deploy Drift with a program ID where we have the private key
+//! 2. Recreate all accounts with correct PDAs derived from the new program ID
+//! 3. Update account owners and internal references
+//!
+//! This tool automates that process by:
+//!
+//! - Fetching accounts from mainnet
+//! - Transforming them to work with a local deployment
+//! - Saving them to JSON files that can be loaded in a local validator
+//!
+//! ## Usage
+//!
+//! ```
+//! account-extractor --program-id <PROGRAM_ID> --output-dir <OUTPUT_DIR>
+//! ```
+//!
+//! For token accounts:
+//!
+//! ```
+//! account-extractor --wallet <WALLET_ADDRESS> --output-dir <OUTPUT_DIR>
+//! ```
+
 mod config;
 mod drift_idl;
 mod extractorv2;

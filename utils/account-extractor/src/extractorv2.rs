@@ -1,3 +1,27 @@
+//! # Account Extractor for Drift Local Environment
+//!
+//! This module provides functionality to extract and transform Drift-related accounts from
+//! Solana mainnet to be usable in a local validator environment with a custom deployment
+//! of the Drift protocol.
+//!
+//! ## Purpose
+//!
+//! When deploying Drift locally for testing (especially for CPI operations like deposits
+//! and withdrawals to USDC vaults), we need to:
+//!
+//! 1. Deploy the Drift program from source using an address where we have the private key locally
+//! 2. Recreate the necessary account data with correct PDAs derived from the new program ID
+//! 3. Modify account owners and internal references to match the new program ID
+//! 4. Ensure token accounts (like the USDC vault) have correct ownership for testing
+//!
+//! ## Key Functionality
+//!
+//! - Extracts accounts from Solana mainnet based on discriminators
+//! - Transforms accounts for local use (updating owners, addresses, and internal references)
+//! - Handles special cases like remapping the USDC vault
+//! - Processes different account types with specialized processors (SpotMarket, State, Token)
+//! - Saves transformed accounts to JSON files for loading into a local validator
+
 use crate::config::Config;
 use crate::drift_idl::accounts::{SpotMarket, State};
 use crate::pda::types::PdaInfo;
@@ -17,6 +41,11 @@ use spl_associated_token_account::get_associated_token_address;
 use std::fs;
 use std::path::Path;
 
+/// Main extractor for Drift accounts to enable local testing
+///
+/// `AccountExtractor2` handles fetching, transforming, and saving Drift-related accounts
+/// from mainnet so they can be used in a local validator environment with a custom
+/// deployment of the Drift protocol (where we have the private key).
 pub struct AccountExtractor2 {
     config: Config,
     client: RpcClient,
@@ -27,6 +56,10 @@ pub struct AccountExtractor2 {
 }
 
 impl AccountExtractor2 {
+    /// Create a new account extractor with the given configuration
+    ///
+    /// This initializes the RPC client, PDA generator, and account processors
+    /// needed to transform Drift accounts.
     pub fn new(config: Config) -> Self {
         let client = RpcClient::new(&config.rpc_url);
         let new_program_id = config.get_new_program_id().unwrap();
@@ -37,6 +70,8 @@ impl AccountExtractor2 {
         let state_processor = StateProcessor::new(&new_program_id);
 
         // Create token processor with drift signer PDA
+        // This processor is used to update token account authorities to match
+        // the new Drift signer derived from our local program ID
         let drift_signer = new_generator.find_pda(PdaType::DriftSigner).address;
         let token_processor = TokenProcessor::new_with_signer(drift_signer);
 
@@ -51,6 +86,11 @@ impl AccountExtractor2 {
     }
 
     /// Main entry point for extracting accounts
+    ///
+    /// This method determines what accounts to extract based on the configuration:
+    /// - Program accounts (all Drift accounts associated with a program ID)
+    /// - A single account by address
+    /// - Token accounts for a wallet address
     pub async fn extract_accounts(&self) -> Result<()> {
         self.ensure_output_dir()?;
 
@@ -62,7 +102,7 @@ impl AccountExtractor2 {
             self.extract_single_account(account_address, true).await?;
         } else if let Some(wallet_address) = &self.config.wallet_address {
             // Extract token accounts for wallet
-            self.extract_token_accounts(wallet_address).await?;
+            self.extract_usdc_token_accounts(wallet_address).await?;
             self.extract_single_account(wallet_address, false).await?;
         }
 
@@ -76,7 +116,11 @@ impl AccountExtractor2 {
     }
 
     /// Extract token accounts for a wallet
-    async fn extract_token_accounts(&self, wallet_address: &str) -> Result<()> {
+    ///
+    /// This is useful for getting USDC token accounts associated with a test wallet
+    /// that we have the private key for locally. These accounts will be used for
+    /// testing deposit and withdrawal operations with Drift.
+    async fn extract_usdc_token_accounts(&self, wallet_address: &str) -> Result<()> {
         // Parse wallet address
         let wallet_pubkey = parse_pubkey(wallet_address, "wallet")?;
 
@@ -106,6 +150,9 @@ impl AccountExtractor2 {
     }
 
     /// Extract a single account by address
+    ///
+    /// This method fetches a single account and optionally updates its owner
+    /// to the new program ID.
     async fn extract_single_account(
         &self,
         account_address: &str,
@@ -128,6 +175,10 @@ impl AccountExtractor2 {
     }
 
     /// Conditionally update an account's owner
+    ///
+    /// If the account is a program-owned account (not a token account), this will
+    /// update its owner to the new program ID. This is necessary for the account
+    /// to be usable with our locally deployed version of Drift.
     fn maybe_update_account_owner(&self, account: &mut Account, update_owner: bool) -> Result<()> {
         // Check if we need to remap the owner program ID
         // If it's owned by the token program we want to leave it since it's a top level token account
@@ -143,6 +194,15 @@ impl AccountExtractor2 {
     }
 
     /// Extract program accounts
+    ///
+    /// This method extracts all Drift-related accounts associated with a program ID (assuming that program ID passed in is Drifty...),
+    /// transforms them to be compatible with our local deployment, and saves them
+    /// to the output directory.
+    ///
+    /// The accounts are filtered by discriminator to only get the ones we care about:
+    /// - SpotMarket accounts (for USDC market)
+    /// - State accounts (Drift protocol state)
+    /// - Additionally processes the USDC vault remapping
     async fn extract_program_accounts(&self, program_id_str: &str) -> Result<()> {
         // Parse program ID and verify program exists
         let program_id = self.verify_program_exists(program_id_str).await?;
@@ -154,10 +214,12 @@ impl AccountExtractor2 {
         // Fetch all filtered accounts
         let all_filtered_accounts = self.fetch_program_accounts(&program_id).await?;
 
-        // Process token remappings
+        // Process token remappings - this handles the USDC vault token account
+        // which is critical for deposit/withdraw operations
         self.process_usdc_vault_remapping().await?;
 
         // Process different account types
+        // State account contains global Drift protocol state and admin/signer references
         self.process_accounts_with_processor(
             &all_filtered_accounts,
             &self.state_processor,
@@ -165,6 +227,8 @@ impl AccountExtractor2 {
         )
         .await?;
 
+        // SpotMarket accounts define markets like USDC
+        // We need to update their vault references and owners
         self.process_accounts_with_processor(
             &all_filtered_accounts,
             &self.spot_market_processor,
@@ -189,6 +253,9 @@ impl AccountExtractor2 {
     }
 
     /// Fetch accounts filtered by discriminator
+    ///
+    /// This uses account discriminators (the first 8 bytes of serialized Anchor accounts)
+    /// to find specific account types like SpotMarket and State.
     async fn fetch_program_accounts(&self, program_id: &Pubkey) -> Result<Vec<(Pubkey, Account)>> {
         // Use account discriminators to find typed accounts
         let discriminators = [SpotMarket::DISCRIMINATOR, State::DISCRIMINATOR];
@@ -217,6 +284,14 @@ impl AccountExtractor2 {
     }
 
     /// Generic method to process accounts with a given processor
+    ///
+    /// This method takes a processor implementing the AccountProcessor trait
+    /// and applies it to all applicable accounts, saving the results.
+    ///
+    /// Each processor is responsible for:
+    /// 1. Checking if it can handle an account type
+    /// 2. Deserializing and modifying the account
+    /// 3. Reserializing and returning the modified account with its new address
     async fn process_accounts_with_processor<P: AccountProcessor>(
         &self,
         accounts: &[(Pubkey, Account)],
@@ -254,6 +329,15 @@ impl AccountExtractor2 {
     }
 
     /// Process USDC vault remapping
+    ///
+    /// This is a critical function that remaps the USDC vault token account.
+    /// The USDC vault is used for deposits and withdrawals, so it must be correctly
+    /// set up for local testing. This function:
+    ///
+    /// 1. Gets the original USDC vault address from mainnet
+    /// 2. Determines the new vault PDA based on our local program ID
+    /// 3. Updates the token account's authority to the new Drift signer
+    /// 4. Saves the account with the new address
     async fn process_usdc_vault_remapping(&self) -> Result<()> {
         const USDC_MARKET_INDEX: u16 = 0;
 
@@ -294,6 +378,10 @@ impl AccountExtractor2 {
     }
 
     /// Process a vault token account
+    ///
+    /// This fetches a token account (like the USDC vault) and processes it
+    /// using the provided processor, which updates its authority to match
+    /// the new Drift signer.
     async fn process_vault_token_account(
         &self,
         vault_pubkey: &Pubkey,
@@ -316,6 +404,10 @@ impl AccountExtractor2 {
     }
 
     /// Save an account to a JSON file
+    ///
+    /// This saves the account data to a JSON file in the configured output
+    /// directory. The file format is compatible with the Solana local validator
+    /// and can be loaded using --account-dir.
     fn save_account_to_file(&self, pubkey: &Pubkey, account: &Account) -> Result<()> {
         let output_dir = &self.config.output_dir;
         self.save_account_to_directory(pubkey, account, output_dir)
@@ -348,6 +440,9 @@ impl AccountExtractor2 {
     }
 
     /// Format account data for JSON serialization
+    ///
+    /// Creates a JSON structure that represents the account in a format
+    /// compatible with Solana's local validator.
     fn format_account_for_json(&self, pubkey: &Pubkey, account: &Account) -> serde_json::Value {
         serde_json::json!({
             "pubkey": pubkey.to_string(),
@@ -366,6 +461,9 @@ impl AccountExtractor2 {
     }
 
     /// Create a RpcProgramAccountsConfig for a given discriminator
+    ///
+    /// This configures a filter to find accounts with a specific discriminator.
+    /// Anchor uses the first 8 bytes as a discriminator to identify account types.
     fn create_discriminator_search_config(&self, discriminator: &[u8]) -> RpcProgramAccountsConfig {
         // Create a memcmp filter for the discriminator
         let filter = RpcFilterType::Memcmp(Memcmp::new_raw_bytes(
