@@ -2,31 +2,32 @@
 
 # Script to deploy the Drift program to a local Solana validator
 
-# Set default values
-DEPLOY_PAYER_KEYPAIR_PATH=${DEPLOY_PAYER_KEYPAIR_PATH:-"./drift-local-key.json"}
-DRIFT_PROGRAM_KEYPAIR_PATH=${DRIFT_PROGRAM_KEYPAIR_PATH:-"./drift-program.json"}
-DRIFT_PROGRAM_PATH=${DRIFT_PROGRAM_PATH:-"../fixtures/programs/drift.so"}
-SOLANA_URL=${LOCAL_RPC_URL:-"http://127.0.0.1:8899"}
+# Determine the project root directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# Load environment variables from .env file
+source "$PROJECT_ROOT/.env"
 
 # Print header
 echo "===== Drift Program Deployment ====="
-echo "Using payer keypair: $DEPLOY_PAYER_KEYPAIR_PATH"
+echo "Using payer keypair: $DEPLOY_KEYPAIR_PATH"
 echo "Using program keypair: $DRIFT_PROGRAM_KEYPAIR_PATH"
-echo "Program binary: $DRIFT_PROGRAM_PATH"
-echo "Solana URL: $SOLANA_URL"
+echo "Program binary: $DRIFT_PROGRAM_BINARY"
+echo "Solana URL: $SOLANA_LOCAL_RPC_URL"
 echo "=================================="
 
 # Check if payer keypair exists
-if [ ! -f "$DEPLOY_PAYER_KEYPAIR_PATH" ]; then
-    echo "Error: Payer keypair not found at $DEPLOY_PAYER_KEYPAIR_PATH"
-    echo "Please create a keypair using 'solana-keygen new --no-passphrase -o $DEPLOY_PAYER_KEYPAIR_PATH'"
-    echo "or specify an existing keypair path using the DEPLOY_PAYER_KEYPAIR_PATH environment variable."
+if [ ! -f "$DEPLOY_KEYPAIR_PATH" ]; then
+    echo "Error: Payer keypair not found at $DEPLOY_KEYPAIR_PATH"
+    echo "Please create a keypair using 'solana-keygen new --no-passphrase -o $DEPLOY_KEYPAIR_PATH'"
+    echo "or specify an existing keypair path in .env file."
     exit 1
 fi
 
 # Verify the payer keypair is valid
-if ! solana address -k "$DEPLOY_PAYER_KEYPAIR_PATH" &>/dev/null; then
-    echo "Error: Invalid payer keypair at $DEPLOY_PAYER_KEYPAIR_PATH"
+if ! solana address -k "$DEPLOY_KEYPAIR_PATH" &>/dev/null; then
+    echo "Error: Invalid payer keypair at $DEPLOY_KEYPAIR_PATH"
     echo "Please provide a valid Solana keypair file."
     exit 1
 fi
@@ -35,7 +36,7 @@ fi
 if [ ! -f "$DRIFT_PROGRAM_KEYPAIR_PATH" ]; then
     echo "Error: Program keypair not found at $DRIFT_PROGRAM_KEYPAIR_PATH"
     echo "Please create a keypair using 'solana-keygen new --no-passphrase -o $DRIFT_PROGRAM_KEYPAIR_PATH'"
-    echo "or specify an existing keypair path using the DRIFT_PROGRAM_KEYPAIR_PATH environment variable."
+    echo "or update the path in .env file."
     exit 1
 fi
 
@@ -45,23 +46,22 @@ echo "Using program ID: $PROGRAM_ID"
 
 # Airdrop SOL to the payer keypair
 echo "Airdropping 100 SOL to deployment account..."
-solana airdrop 100 --keypair "$DEPLOY_PAYER_KEYPAIR_PATH" --url "$SOLANA_URL"
+solana airdrop 100 --keypair "$DEPLOY_KEYPAIR_PATH" --url "$SOLANA_LOCAL_RPC_URL"
 
 # Check balance
 echo "Checking account balance..."
-solana balance --keypair "$DEPLOY_PAYER_KEYPAIR_PATH" --url "$SOLANA_URL"
-
+solana balance --keypair "$DEPLOY_KEYPAIR_PATH" --url "$SOLANA_LOCAL_RPC_URL"
 
 # Check if program binary exists
-if [ ! -f "$DRIFT_PROGRAM_PATH" ]; then
-    echo "Error: Program binary not found at $DRIFT_PROGRAM_PATH"
-    echo "Please provide the path to the program binary using DRIFT_PROGRAM_PATH environment variable"
+if [ ! -f "$DRIFT_PROGRAM_BINARY" ]; then
+    echo "Error: Program binary not found at $DRIFT_PROGRAM_BINARY"
+    echo "Please build the program first using 'scripts/build-drift/build.sh'"
     exit 1
 fi
 
 # Deploy the program with the program keypair
 echo "Deploying Drift program..."
-DEPLOY_OUTPUT=$(solana program deploy --program-id "$DRIFT_PROGRAM_KEYPAIR_PATH" --keypair "$DEPLOY_PAYER_KEYPAIR_PATH" --url "$SOLANA_URL" "$DRIFT_PROGRAM_PATH")
+DEPLOY_OUTPUT=$(solana program deploy --program-id "$DRIFT_PROGRAM_KEYPAIR_PATH" --keypair "$DEPLOY_KEYPAIR_PATH" --url "$SOLANA_LOCAL_RPC_URL" "$DRIFT_PROGRAM_BINARY")
 echo "$DEPLOY_OUTPUT"
 
 # Extract program ID from deploy output
@@ -83,7 +83,7 @@ if [ -n "$DEPLOYED_PROGRAM_ID" ]; then
     
     # Show program details
     echo "Fetching program details..."
-    solana program show "$DEPLOYED_PROGRAM_ID" --keypair "$DEPLOY_PAYER_KEYPAIR_PATH" --url "$SOLANA_URL"
+    solana program show "$DEPLOYED_PROGRAM_ID" --keypair "$DEPLOY_KEYPAIR_PATH" --url "$SOLANA_LOCAL_RPC_URL"
     
     # Save program ID to a file for reference
     echo "$DEPLOYED_PROGRAM_ID" > drift-program-id.txt
