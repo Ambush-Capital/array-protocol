@@ -40,8 +40,9 @@ async function main() {
         process.exit(1);
     }
     // Initialize Drift client
-    const driftClient = await (0, drift_utils_1.createDriftClient)(connection, wallet);
+    let driftClient = await (0, drift_utils_1.createDriftClient)(connection, wallet);
     // Check if user account exists, if not create it
+    let userInitialized = false;
     try {
         await (0, drift_utils_1.fetchAndDisplayUserAccount)(driftClient);
     }
@@ -52,6 +53,16 @@ async function main() {
         await initOp.execute();
         // Pause and track slots after initialization
         await (0, connection_utils_1.pauseAndTrackSlots)(connection, 1000, "Waiting for user account initialization to confirm...");
+        // Set flag to indicate we just initialized the user
+        userInitialized = true;
+    }
+    // If we just initialized the user, recreate the Drift client to ensure it recognizes the new account
+    if (userInitialized) {
+        console.log(`${ui_utils_1.UI.loading} Refreshing Drift client after user initialization...`);
+        // Safely unsubscribe from the current client
+        await (0, drift_utils_1.safeUnsubscribe)(connection, driftClient);
+        // Create a new client
+        driftClient = await (0, drift_utils_1.createDriftClient)(connection, wallet);
         // Display the new user account
         await (0, drift_utils_1.fetchAndDisplayUserAccount)(driftClient);
     }

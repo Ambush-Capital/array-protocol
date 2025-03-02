@@ -1,13 +1,15 @@
 mod config;
 mod drift_idl;
-mod extractor;
+mod extractorv2;
 mod pda;
+mod processors;
 mod types;
+mod utils;
 
 use anyhow::Result;
 use config::Config;
 use env_logger::Env;
-use extractor::AccountExtractor;
+use extractorv2::AccountExtractor2;
 use log::info;
 
 // Replace the tokio::main attribute with explicit runtime creation
@@ -21,7 +23,7 @@ fn main() -> Result<()> {
     let config = Config::new()?;
 
     // Create and run extractor
-    let extractor = AccountExtractor::new(config);
+    let extractor = AccountExtractor2::new(config);
 
     // Create and run the tokio runtime manually
     let rt = tokio::runtime::Runtime::new()?;

@@ -16,7 +16,10 @@
       "problemMatcher": [
         {
           "owner": "rust",
-          "fileLocation": ["relative", "${workspaceFolder}/utils/account-extractor"],
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}/utils/account-extractor"
+          ],
           "pattern": {
             "regexp": "^(.*):(\\d+):(\\d+):\\s+(\\d+):(\\d+)\\s+(warning|error):\\s+(.*)$",
             "file": 1,
@@ -91,4 +94,4 @@
       "type": "promptString"
     }
   ]
-} 
+}

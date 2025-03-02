@@ -30,6 +30,8 @@ solana-test-validator \
     --clone JCNCMFXo5M5qwUPg2Utu1u6YWp3MbygxqBsBeXXJfrw \
     --clone dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH \
     --clone EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v \
+    --clone TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA \
+    --clone 11111111111111111111111111111111 \
     --reset \
     --ledger \
     --url "$RPC_URL" \

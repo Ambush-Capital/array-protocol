@@ -2,9 +2,7 @@
   "rust-analyzer.cargo.features": "all",
   "rust-analyzer.checkOnSave.command": "clippy",
   "rust-analyzer.checkOnSave.extraArgs": [
-    "--",
-    "-A",
-    "warnings"
+    // Empty, to allow warnings to be shown
   ],
   "rust-analyzer.diagnostics.disabled": [
     "proc-macro-derive-resolution-fallback"
@@ -19,14 +17,15 @@
   "editor.formatOnSave": true,
   "rust-analyzer.check.command": "clippy",
   "rust-analyzer.check.extraArgs": [
-    "--",
-    "-A",
-    "warnings"
+    // Empty, to allow warnings to be shown
   ],
   "rust-analyzer.server.extraEnv": {
-    "RUSTFLAGS": "-Dwarnings"
+    "RUSTFLAGS": ""
   },
   "rust-analyzer.linkedProjects": [
     "./utils/account-extractor/Cargo.toml"
-  ]
+  ],
+  "rust-analyzer.diagnostics.experimental.enable": true,
+  "rust-analyzer.diagnostics.warningsAsInfo": false,
+  "rust-analyzer.diagnostics.warningsAsHint": false
 }
