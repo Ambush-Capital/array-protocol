@@ -40,7 +40,7 @@ tmux send-keys -t "$SESSION_NAME:0.1" "printf '\033]2;Build, Deploy & Test\033\\
 tmux send-keys -t "$SESSION_NAME:0.1" "clear" C-m
 tmux send-keys -t "$SESSION_NAME:0.1" "echo '=== DRIFT BUILD, DEPLOY & TEST ==='" C-m
 tmux send-keys -t "$SESSION_NAME:0.1" "echo 'Waiting for validator to start...'" C-m
-tmux send-keys -t "$SESSION_NAME:0.1" "cd $PROJECT_ROOT && make build-and-deploy-drift && make run-tests; echo ''; echo 'Tests completed. This window will close in 30 seconds...'; sleep 30; exit" C-m
+tmux send-keys -t "$SESSION_NAME:0.1" "cd $PROJECT_ROOT && make build-and-deploy-drift; echo ''; echo 'Deployment completed. This window will close in 30 seconds...'; sleep 30; exit" C-m
 
 # Set up hook to start validator after extraction completes with COPYFILE_DISABLE=1
 tmux send-keys -t "$SESSION_NAME:0.0" "; echo ''; echo 'Step 2: Starting validator...'; COPYFILE_DISABLE=1 make run-validator" C-m

@@ -43,6 +43,7 @@ const connection_utils_1 = require("./connection-utils");
 const loadWalletKeypair = async () => {
     // Try to load from KEYPAIR_PATH environment variable first
     const keypairPath = process.env.KEYPAIR_PATH;
+    console.log("keypairPath", keypairPath);
     if (keypairPath && fs.existsSync(keypairPath)) {
         try {
             console.log(`${ui_utils_1.UI.loading} Loading keypair from path: ${keypairPath}`);

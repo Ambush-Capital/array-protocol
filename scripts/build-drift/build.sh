@@ -65,14 +65,16 @@ else
     fi
 fi
 
+# Step 4.5: Create .envrc file
+export PATH="$HOME/tools/solana-v1.18.26/bin:$HOME/tools/anchor-v0.29.0:$PATH"
+
 # Step 5: Install Anchor v0.29.0
-echo "Installing Anchor v0.29.0..."
-avm install 0.29.0
-avm use 0.29.0
+echo "Checking Anchor v0.29.0..."
+anchor --version
 
 # Step 6: Build Anchor project
 echo "Building Anchor project..."
-anchor build
+CFLAGS="-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include" anchor build
 
 # Step 7: Copy the build artifact
 echo "Copying build artifact to $DRIFT_PROGRAM_BINARY..."

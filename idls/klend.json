@@ -2,7 +2,7 @@
   "address": "KLend2g3cP87fffoy8q1mQqGKjrxjC8boSyAYavgmjD",
   "metadata": {
     "name": "kamino_lending",
-    "version": "1.8.0",
+    "version": "0.1.0",
     "spec": "0.1.0"
   },
   "instructions": [
@@ -312,6 +312,45 @@
       "args": []
     },
     {
+      "name": "socialize_loss",
+      "discriminator": [
+        245,
+        75,
+        91,
+        0,
+        236,
+        97,
+        19,
+        3
+      ],
+      "accounts": [
+        {
+          "name": "risk_council",
+          "signer": true
+        },
+        {
+          "name": "obligation",
+          "writable": true
+        },
+        {
+          "name": "lending_market"
+        },
+        {
+          "name": "reserve",
+          "writable": true
+        },
+        {
+          "name": "instruction_sysvar_account"
+        }
+      ],
+      "args": [
+        {
+          "name": "liquidity_amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "withdraw_protocol_fee",
       "discriminator": [
         158,
@@ -361,142 +400,6 @@
       ]
     },
     {
-      "name": "socialize_loss",
-      "discriminator": [
-        245,
-        75,
-        91,
-        0,
-        236,
-        97,
-        19,
-        3
-      ],
-      "accounts": [
-        {
-          "name": "risk_council",
-          "signer": true
-        },
-        {
-          "name": "obligation",
-          "writable": true
-        },
-        {
-          "name": "lending_market"
-        },
-        {
-          "name": "reserve",
-          "writable": true
-        },
-        {
-          "name": "instruction_sysvar_account"
-        }
-      ],
-      "args": [
-        {
-          "name": "liquidity_amount",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "socialize_loss_v2",
-      "discriminator": [
-        238,
-        95,
-        98,
-        220,
-        187,
-        40,
-        204,
-        154
-      ],
-      "accounts": [
-        {
-          "name": "socialize_loss_accounts",
-          "accounts": [
-            {
-              "name": "risk_council",
-              "signer": true
-            },
-            {
-              "name": "obligation",
-              "writable": true
-            },
-            {
-              "name": "lending_market"
-            },
-            {
-              "name": "reserve",
-              "writable": true
-            },
-            {
-              "name": "instruction_sysvar_account"
-            }
-          ]
-        },
-        {
-          "name": "farms_accounts",
-          "accounts": [
-            {
-              "name": "obligation_farm_user_state",
-              "writable": true,
-              "optional": true
-            },
-            {
-              "name": "reserve_farm_state",
-              "writable": true,
-              "optional": true
-            }
-          ]
-        },
-        {
-          "name": "lending_market_authority"
-        },
-        {
-          "name": "farms_program"
-        }
-      ],
-      "args": [
-        {
-          "name": "liquidity_amount",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "mark_obligation_for_deleveraging",
-      "discriminator": [
-        164,
-        35,
-        182,
-        19,
-        0,
-        116,
-        243,
-        127
-      ],
-      "accounts": [
-        {
-          "name": "risk_council",
-          "signer": true
-        },
-        {
-          "name": "obligation",
-          "writable": true
-        },
-        {
-          "name": "lending_market"
-        }
-      ],
-      "args": [
-        {
-          "name": "autodeleverage_target_ltv_pct",
-          "type": "u8"
-        }
-      ]
-    },
-    {
       "name": "refresh_reserve",
       "discriminator": [
         2,
@@ -534,6 +437,26 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "refresh_reserves_batch",
+      "discriminator": [
+        144,
+        110,
+        26,
+        103,
+        162,
+        204,
+        252,
+        147
+      ],
+      "accounts": [],
+      "args": [
+        {
+          "name": "skip_price_updates",
+          "type": "bool"
+        }
+      ]
     },
     {
       "name": "deposit_reserve_liquidity",
@@ -795,33 +718,29 @@
       "accounts": [
         {
           "name": "crank",
+          "writable": true,
           "signer": true
         },
         {
-          "name": "base_accounts",
-          "accounts": [
-            {
-              "name": "obligation"
-            },
-            {
-              "name": "lending_market_authority",
-              "writable": true
-            },
-            {
-              "name": "reserve"
-            },
-            {
-              "name": "reserve_farm_state",
-              "writable": true
-            },
-            {
-              "name": "obligation_farm_user_state",
-              "writable": true
-            },
-            {
-              "name": "lending_market"
-            }
-          ]
+          "name": "obligation"
+        },
+        {
+          "name": "lending_market_authority",
+          "writable": true
+        },
+        {
+          "name": "reserve"
+        },
+        {
+          "name": "reserve_farm_state",
+          "writable": true
+        },
+        {
+          "name": "obligation_farm_user_state",
+          "writable": true
+        },
+        {
+          "name": "lending_market"
         },
         {
           "name": "farms_program"
@@ -914,82 +833,6 @@
       ]
     },
     {
-      "name": "deposit_obligation_collateral_v2",
-      "discriminator": [
-        137,
-        145,
-        151,
-        94,
-        167,
-        113,
-        4,
-        145
-      ],
-      "accounts": [
-        {
-          "name": "deposit_accounts",
-          "accounts": [
-            {
-              "name": "owner",
-              "signer": true
-            },
-            {
-              "name": "obligation",
-              "writable": true
-            },
-            {
-              "name": "lending_market"
-            },
-            {
-              "name": "deposit_reserve",
-              "writable": true
-            },
-            {
-              "name": "reserve_destination_collateral",
-              "writable": true
-            },
-            {
-              "name": "user_source_collateral",
-              "writable": true
-            },
-            {
-              "name": "token_program"
-            },
-            {
-              "name": "instruction_sysvar_account"
-            }
-          ]
-        },
-        {
-          "name": "lending_market_authority"
-        },
-        {
-          "name": "farms_accounts",
-          "accounts": [
-            {
-              "name": "obligation_farm_user_state",
-              "writable": true,
-              "optional": true
-            },
-            {
-              "name": "reserve_farm_state",
-              "writable": true,
-              "optional": true
-            }
-          ]
-        },
-        {
-          "name": "farms_program"
-        }
-      ],
-      "args": [
-        {
-          "name": "collateral_amount",
-          "type": "u64"
-        }
-      ]
-    },
-    {
       "name": "withdraw_obligation_collateral",
       "discriminator": [
         37,
@@ -1033,82 +876,6 @@
         },
         {
           "name": "instruction_sysvar_account"
-        }
-      ],
-      "args": [
-        {
-          "name": "collateral_amount",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "withdraw_obligation_collateral_v2",
-      "discriminator": [
-        202,
-        249,
-        117,
-        114,
-        231,
-        192,
-        47,
-        138
-      ],
-      "accounts": [
-        {
-          "name": "withdraw_accounts",
-          "accounts": [
-            {
-              "name": "owner",
-              "signer": true
-            },
-            {
-              "name": "obligation",
-              "writable": true
-            },
-            {
-              "name": "lending_market"
-            },
-            {
-              "name": "lending_market_authority"
-            },
-            {
-              "name": "withdraw_reserve",
-              "writable": true
-            },
-            {
-              "name": "reserve_source_collateral",
-              "writable": true
-            },
-            {
-              "name": "user_destination_collateral",
-              "writable": true
-            },
-            {
-              "name": "token_program"
-            },
-            {
-              "name": "instruction_sysvar_account"
-            }
-          ]
-        },
-        {
-          "name": "farms_accounts",
-          "accounts": [
-            {
-              "name": "obligation_farm_user_state",
-              "writable": true,
-              "optional": true
-            },
-            {
-              "name": "reserve_farm_state",
-              "writable": true,
-              "optional": true
-            }
-          ]
-        },
-        {
-          "name": "farms_program"
         }
       ],
       "args": [
@@ -1185,95 +952,6 @@
       ]
     },
     {
-      "name": "borrow_obligation_liquidity_v2",
-      "discriminator": [
-        161,
-        128,
-        143,
-        245,
-        171,
-        199,
-        194,
-        6
-      ],
-      "accounts": [
-        {
-          "name": "borrow_accounts",
-          "accounts": [
-            {
-              "name": "owner",
-              "signer": true
-            },
-            {
-              "name": "obligation",
-              "writable": true
-            },
-            {
-              "name": "lending_market"
-            },
-            {
-              "name": "lending_market_authority"
-            },
-            {
-              "name": "borrow_reserve",
-              "writable": true
-            },
-            {
-              "name": "borrow_reserve_liquidity_mint",
-              "writable": true
-            },
-            {
-              "name": "reserve_source_liquidity",
-              "writable": true
-            },
-            {
-              "name": "borrow_reserve_liquidity_fee_receiver",
-              "writable": true
-            },
-            {
-              "name": "user_destination_liquidity",
-              "writable": true
-            },
-            {
-              "name": "referrer_token_state",
-              "writable": true,
-              "optional": true
-            },
-            {
-              "name": "token_program"
-            },
-            {
-              "name": "instruction_sysvar_account"
-            }
-          ]
-        },
-        {
-          "name": "farms_accounts",
-          "accounts": [
-            {
-              "name": "obligation_farm_user_state",
-              "writable": true,
-              "optional": true
-            },
-            {
-              "name": "reserve_farm_state",
-              "writable": true,
-              "optional": true
-            }
-          ]
-        },
-        {
-          "name": "farms_program"
-        }
-      ],
-      "args": [
-        {
-          "name": "liquidity_amount",
-          "type": "u64"
-        }
-      ]
-    },
-    {
       "name": "repay_obligation_liquidity",
       "discriminator": [
         145,
@@ -1323,362 +1001,6 @@
       "args": [
         {
           "name": "liquidity_amount",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "repay_obligation_liquidity_v2",
-      "discriminator": [
-        116,
-        174,
-        213,
-        76,
-        180,
-        53,
-        210,
-        144
-      ],
-      "accounts": [
-        {
-          "name": "repay_accounts",
-          "accounts": [
-            {
-              "name": "owner",
-              "signer": true
-            },
-            {
-              "name": "obligation",
-              "writable": true
-            },
-            {
-              "name": "lending_market"
-            },
-            {
-              "name": "repay_reserve",
-              "writable": true
-            },
-            {
-              "name": "reserve_liquidity_mint",
-              "writable": true
-            },
-            {
-              "name": "reserve_destination_liquidity",
-              "writable": true
-            },
-            {
-              "name": "user_source_liquidity",
-              "writable": true
-            },
-            {
-              "name": "token_program"
-            },
-            {
-              "name": "instruction_sysvar_account"
-            }
-          ]
-        },
-        {
-          "name": "farms_accounts",
-          "accounts": [
-            {
-              "name": "obligation_farm_user_state",
-              "writable": true,
-              "optional": true
-            },
-            {
-              "name": "reserve_farm_state",
-              "writable": true,
-              "optional": true
-            }
-          ]
-        },
-        {
-          "name": "lending_market_authority"
-        },
-        {
-          "name": "farms_program"
-        }
-      ],
-      "args": [
-        {
-          "name": "liquidity_amount",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "repay_and_withdraw_and_redeem",
-      "discriminator": [
-        2,
-        54,
-        152,
-        3,
-        148,
-        96,
-        109,
-        218
-      ],
-      "accounts": [
-        {
-          "name": "repay_accounts",
-          "accounts": [
-            {
-              "name": "owner",
-              "signer": true
-            },
-            {
-              "name": "obligation",
-              "writable": true
-            },
-            {
-              "name": "lending_market"
-            },
-            {
-              "name": "repay_reserve",
-              "writable": true
-            },
-            {
-              "name": "reserve_liquidity_mint",
-              "writable": true
-            },
-            {
-              "name": "reserve_destination_liquidity",
-              "writable": true
-            },
-            {
-              "name": "user_source_liquidity",
-              "writable": true
-            },
-            {
-              "name": "token_program"
-            },
-            {
-              "name": "instruction_sysvar_account"
-            }
-          ]
-        },
-        {
-          "name": "withdraw_accounts",
-          "accounts": [
-            {
-              "name": "owner",
-              "signer": true
-            },
-            {
-              "name": "obligation",
-              "writable": true
-            },
-            {
-              "name": "lending_market"
-            },
-            {
-              "name": "lending_market_authority"
-            },
-            {
-              "name": "withdraw_reserve",
-              "writable": true
-            },
-            {
-              "name": "reserve_liquidity_mint",
-              "writable": true
-            },
-            {
-              "name": "reserve_source_collateral",
-              "writable": true
-            },
-            {
-              "name": "reserve_collateral_mint",
-              "writable": true
-            },
-            {
-              "name": "reserve_liquidity_supply",
-              "writable": true
-            },
-            {
-              "name": "user_destination_liquidity",
-              "writable": true
-            },
-            {
-              "name": "placeholder_user_destination_collateral",
-              "optional": true
-            },
-            {
-              "name": "collateral_token_program"
-            },
-            {
-              "name": "liquidity_token_program"
-            },
-            {
-              "name": "instruction_sysvar_account"
-            }
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "repay_amount",
-          "type": "u64"
-        },
-        {
-          "name": "withdraw_collateral_amount",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "repay_and_withdraw_and_redeem_v2",
-      "discriminator": [
-        111,
-        173,
-        148,
-        121,
-        105,
-        221,
-        159,
-        99
-      ],
-      "accounts": [
-        {
-          "name": "repay_and_withdraw_accounts",
-          "accounts": [
-            {
-              "name": "repay_accounts",
-              "accounts": [
-                {
-                  "name": "owner",
-                  "signer": true
-                },
-                {
-                  "name": "obligation",
-                  "writable": true
-                },
-                {
-                  "name": "lending_market"
-                },
-                {
-                  "name": "repay_reserve",
-                  "writable": true
-                },
-                {
-                  "name": "reserve_liquidity_mint",
-                  "writable": true
-                },
-                {
-                  "name": "reserve_destination_liquidity",
-                  "writable": true
-                },
-                {
-                  "name": "user_source_liquidity",
-                  "writable": true
-                },
-                {
-                  "name": "token_program"
-                },
-                {
-                  "name": "instruction_sysvar_account"
-                }
-              ]
-            },
-            {
-              "name": "withdraw_accounts",
-              "accounts": [
-                {
-                  "name": "owner",
-                  "signer": true
-                },
-                {
-                  "name": "obligation",
-                  "writable": true
-                },
-                {
-                  "name": "lending_market"
-                },
-                {
-                  "name": "lending_market_authority"
-                },
-                {
-                  "name": "withdraw_reserve",
-                  "writable": true
-                },
-                {
-                  "name": "reserve_liquidity_mint",
-                  "writable": true
-                },
-                {
-                  "name": "reserve_source_collateral",
-                  "writable": true
-                },
-                {
-                  "name": "reserve_collateral_mint",
-                  "writable": true
-                },
-                {
-                  "name": "reserve_liquidity_supply",
-                  "writable": true
-                },
-                {
-                  "name": "user_destination_liquidity",
-                  "writable": true
-                },
-                {
-                  "name": "placeholder_user_destination_collateral",
-                  "optional": true
-                },
-                {
-                  "name": "collateral_token_program"
-                },
-                {
-                  "name": "liquidity_token_program"
-                },
-                {
-                  "name": "instruction_sysvar_account"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "name": "collateral_farms_accounts",
-          "accounts": [
-            {
-              "name": "obligation_farm_user_state",
-              "writable": true,
-              "optional": true
-            },
-            {
-              "name": "reserve_farm_state",
-              "writable": true,
-              "optional": true
-            }
-          ]
-        },
-        {
-          "name": "debt_farms_accounts",
-          "accounts": [
-            {
-              "name": "obligation_farm_user_state",
-              "writable": true,
-              "optional": true
-            },
-            {
-              "name": "reserve_farm_state",
-              "writable": true,
-              "optional": true
-            }
-          ]
-        },
-        {
-          "name": "farms_program"
-        }
-      ],
-      "args": [
-        {
-          "name": "repay_amount",
-          "type": "u64"
-        },
-        {
-          "name": "withdraw_collateral_amount",
           "type": "u64"
         }
       ]
@@ -1757,102 +1079,6 @@
       ]
     },
     {
-      "name": "deposit_reserve_liquidity_and_obligation_collateral_v2",
-      "discriminator": [
-        216,
-        224,
-        191,
-        27,
-        204,
-        151,
-        102,
-        175
-      ],
-      "accounts": [
-        {
-          "name": "deposit_accounts",
-          "accounts": [
-            {
-              "name": "owner",
-              "writable": true,
-              "signer": true
-            },
-            {
-              "name": "obligation",
-              "writable": true
-            },
-            {
-              "name": "lending_market"
-            },
-            {
-              "name": "lending_market_authority"
-            },
-            {
-              "name": "reserve",
-              "writable": true
-            },
-            {
-              "name": "reserve_liquidity_mint",
-              "writable": true
-            },
-            {
-              "name": "reserve_liquidity_supply",
-              "writable": true
-            },
-            {
-              "name": "reserve_collateral_mint",
-              "writable": true
-            },
-            {
-              "name": "reserve_destination_deposit_collateral",
-              "writable": true
-            },
-            {
-              "name": "user_source_liquidity",
-              "writable": true
-            },
-            {
-              "name": "placeholder_user_destination_collateral",
-              "optional": true
-            },
-            {
-              "name": "collateral_token_program"
-            },
-            {
-              "name": "liquidity_token_program"
-            },
-            {
-              "name": "instruction_sysvar_account"
-            }
-          ]
-        },
-        {
-          "name": "farms_accounts",
-          "accounts": [
-            {
-              "name": "obligation_farm_user_state",
-              "writable": true,
-              "optional": true
-            },
-            {
-              "name": "reserve_farm_state",
-              "writable": true,
-              "optional": true
-            }
-          ]
-        },
-        {
-          "name": "farms_program"
-        }
-      ],
-      "args": [
-        {
-          "name": "liquidity_amount",
-          "type": "u64"
-        }
-      ]
-    },
-    {
       "name": "withdraw_obligation_collateral_and_redeem_reserve_collateral",
       "discriminator": [
         75,
@@ -1867,6 +1093,7 @@
       "accounts": [
         {
           "name": "owner",
+          "writable": true,
           "signer": true
         },
         {
@@ -1915,101 +1142,6 @@
         },
         {
           "name": "instruction_sysvar_account"
-        }
-      ],
-      "args": [
-        {
-          "name": "collateral_amount",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "withdraw_obligation_collateral_and_redeem_reserve_collateral_v2",
-      "discriminator": [
-        235,
-        52,
-        119,
-        152,
-        149,
-        197,
-        20,
-        7
-      ],
-      "accounts": [
-        {
-          "name": "withdraw_accounts",
-          "accounts": [
-            {
-              "name": "owner",
-              "signer": true
-            },
-            {
-              "name": "obligation",
-              "writable": true
-            },
-            {
-              "name": "lending_market"
-            },
-            {
-              "name": "lending_market_authority"
-            },
-            {
-              "name": "withdraw_reserve",
-              "writable": true
-            },
-            {
-              "name": "reserve_liquidity_mint",
-              "writable": true
-            },
-            {
-              "name": "reserve_source_collateral",
-              "writable": true
-            },
-            {
-              "name": "reserve_collateral_mint",
-              "writable": true
-            },
-            {
-              "name": "reserve_liquidity_supply",
-              "writable": true
-            },
-            {
-              "name": "user_destination_liquidity",
-              "writable": true
-            },
-            {
-              "name": "placeholder_user_destination_collateral",
-              "optional": true
-            },
-            {
-              "name": "collateral_token_program"
-            },
-            {
-              "name": "liquidity_token_program"
-            },
-            {
-              "name": "instruction_sysvar_account"
-            }
-          ]
-        },
-        {
-          "name": "farms_accounts",
-          "accounts": [
-            {
-              "name": "obligation_farm_user_state",
-              "writable": true,
-              "optional": true
-            },
-            {
-              "name": "reserve_farm_state",
-              "writable": true,
-              "optional": true
-            }
-          ]
-        },
-        {
-          "name": "farms_program"
         }
       ],
       "args": [
@@ -2105,147 +1237,6 @@
         },
         {
           "name": "instruction_sysvar_account"
-        }
-      ],
-      "args": [
-        {
-          "name": "liquidity_amount",
-          "type": "u64"
-        },
-        {
-          "name": "min_acceptable_received_liquidity_amount",
-          "type": "u64"
-        },
-        {
-          "name": "max_allowed_ltv_override_percent",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "liquidate_obligation_and_redeem_reserve_collateral_v2",
-      "discriminator": [
-        162,
-        161,
-        35,
-        143,
-        30,
-        187,
-        185,
-        103
-      ],
-      "accounts": [
-        {
-          "name": "liquidation_accounts",
-          "accounts": [
-            {
-              "name": "liquidator",
-              "signer": true
-            },
-            {
-              "name": "obligation",
-              "writable": true
-            },
-            {
-              "name": "lending_market"
-            },
-            {
-              "name": "lending_market_authority"
-            },
-            {
-              "name": "repay_reserve",
-              "writable": true
-            },
-            {
-              "name": "repay_reserve_liquidity_mint",
-              "writable": true
-            },
-            {
-              "name": "repay_reserve_liquidity_supply",
-              "writable": true
-            },
-            {
-              "name": "withdraw_reserve",
-              "writable": true
-            },
-            {
-              "name": "withdraw_reserve_liquidity_mint",
-              "writable": true
-            },
-            {
-              "name": "withdraw_reserve_collateral_mint",
-              "writable": true
-            },
-            {
-              "name": "withdraw_reserve_collateral_supply",
-              "writable": true
-            },
-            {
-              "name": "withdraw_reserve_liquidity_supply",
-              "writable": true
-            },
-            {
-              "name": "withdraw_reserve_liquidity_fee_receiver",
-              "writable": true
-            },
-            {
-              "name": "user_source_liquidity",
-              "writable": true
-            },
-            {
-              "name": "user_destination_collateral",
-              "writable": true
-            },
-            {
-              "name": "user_destination_liquidity",
-              "writable": true
-            },
-            {
-              "name": "collateral_token_program"
-            },
-            {
-              "name": "repay_liquidity_token_program"
-            },
-            {
-              "name": "withdraw_liquidity_token_program"
-            },
-            {
-              "name": "instruction_sysvar_account"
-            }
-          ]
-        },
-        {
-          "name": "collateral_farms_accounts",
-          "accounts": [
-            {
-              "name": "obligation_farm_user_state",
-              "writable": true,
-              "optional": true
-            },
-            {
-              "name": "reserve_farm_state",
-              "writable": true,
-              "optional": true
-            }
-          ]
-        },
-        {
-          "name": "debt_farms_accounts",
-          "accounts": [
-            {
-              "name": "obligation_farm_user_state",
-              "writable": true,
-              "optional": true
-            },
-            {
-              "name": "reserve_farm_state",
-              "writable": true,
-              "optional": true
-            }
-          ]
-        },
-        {
-          "name": "farms_program"
         }
       ],
       "args": [
@@ -2456,9 +1447,6 @@
           "name": "reserve"
         },
         {
-          "name": "referrer"
-        },
-        {
           "name": "referrer_token_state",
           "writable": true
         },
@@ -2469,7 +1457,12 @@
           "name": "system_program"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "referrer",
+          "type": "pubkey"
+        }
+      ]
     },
     {
       "name": "init_user_metadata",
@@ -3132,8 +2125,8 @@
     },
     {
       "code": 6059,
-      "name": "DeprecatedInvalidObligationId",
-      "msg": "[DEPRECATED] Obligation id must be 0"
+      "name": "InvalidObligationId",
+      "msg": "Obligation id must be 0"
     },
     {
       "code": 6060,
@@ -3394,31 +2387,6 @@
       "code": 6111,
       "name": "CannotCalculateReferralAmountDueToSlotsMismatch",
       "msg": "Cannot calculate referral amount due to slots mismatch"
-    },
-    {
-      "code": 6112,
-      "name": "ObligationOwnersMustMatch",
-      "msg": "Obligation owners must match"
-    },
-    {
-      "code": 6113,
-      "name": "ObligationsMustMatch",
-      "msg": "Obligations must match"
-    },
-    {
-      "code": 6114,
-      "name": "LendingMarketsMustMatch",
-      "msg": "Lending markets must match"
-    },
-    {
-      "code": 6115,
-      "name": "ObligationCurrentlyMarkedForDeleveraging",
-      "msg": "Obligation is currently marked for deleveraging"
-    },
-    {
-      "code": 6116,
-      "name": "FarmAccountsMissing",
-      "msg": "Farm accounts to refresh are missing"
     }
   ],
   "types": [
@@ -3521,7 +2489,7 @@
             "name": "UpdateMinLiquidationBonusBps"
           },
           {
-            "name": "UpdateDeleveragingMarginCallPeriod"
+            "name": "DeleveragingMarginCallPeriod"
           },
           {
             "name": "UpdateBorrowFactor"
@@ -3533,7 +2501,7 @@
             "name": "UpdateElevationGroup"
           },
           {
-            "name": "UpdateDeleveragingThresholdDecreaseBpsPerDay"
+            "name": "DeleveragingThresholdSlotsPerBps"
           },
           {
             "name": "DeprecatedUpdateMultiplierSideBoost"
@@ -3554,7 +2522,7 @@
             "name": "UpdateDisableUsageAsCollateralOutsideEmode"
           },
           {
-            "name": "UpdateBlockBorrowingAboveUtilizationPct"
+            "name": "UpdateBlockBorrowingAboveUtilization"
           },
           {
             "name": "UpdateBlockPriceUsage"
@@ -3567,12 +2535,6 @@
           },
           {
             "name": "UpdateHostFixedInterestRateBps"
-          },
-          {
-            "name": "UpdateAutodeleverageEnabled"
-          },
-          {
-            "name": "UpdateDeleveragingBonusIncreaseBpsPerDay"
           }
         ]
       }
@@ -3671,7 +2633,7 @@
             "name": "UpdateLiquidationMaxValue"
           },
           {
-            "name": "DeprecatedUpdateGlobalUnhealthyBorrow"
+            "name": "UpdateGlobalUnhealthyBorrow"
           },
           {
             "name": "UpdateGlobalAllowedBorrow"
@@ -3707,19 +2669,13 @@
             "name": "UpdateMinNetValueObligationPostAction"
           },
           {
-            "name": "UpdateMinValueLtvSkipPriorityLiqCheck"
-          },
-          {
-            "name": "UpdateMinValueBfSkipPriorityLiqCheck"
+            "name": "UpdateMinValueSkipPriorityLiqCheck"
           },
           {
             "name": "UpdatePaddingFields"
           },
           {
             "name": "UpdateName"
-          },
-          {
-            "name": "UpdateIndividualAutodeleverageMarginCallPeriodSecs"
           }
         ]
       }
@@ -4170,17 +3126,15 @@
           {
             "name": "deleveraging_margin_call_period_secs",
             "docs": [
-              "Time in seconds that must pass before redemptions are enabled after the deposit limit is",
-              "crossed.",
-              "Only relevant when `autodeleverage_enabled == 1`, and must not be 0 in such case."
+              "Time in seconds that must pass before redemptions are enabled after the deposit limit is crossed"
             ],
             "type": "u64"
           },
           {
-            "name": "deleveraging_threshold_decrease_bps_per_day",
+            "name": "deleveraging_threshold_slots_per_bps",
             "docs": [
-              "The rate at which the deleveraging threshold decreases, in bps per day.",
-              "Only relevant when `autodeleverage_enabled == 1`, and must not be 0 in such case."
+              "The rate at which the deleveraging threshold decreases in slots per bps",
+              "e.g. 1 bps per hour would be 7200 slots per bps (assuming 2 slots per second)"
             ],
             "type": "u64"
           },
@@ -4241,7 +3195,7 @@
           {
             "name": "deposit_withdrawal_cap",
             "docs": [
-              "Deposit withdrawal caps - deposit & redeem"
+              "Deposit withdrawl caps - deposit & redeem"
             ],
             "type": {
               "defined": {
@@ -4252,7 +3206,7 @@
           {
             "name": "debt_withdrawal_cap",
             "docs": [
-              "Debt withdrawal caps - borrow & repay"
+              "Debt withdrawl caps - borrow & repay"
             ],
             "type": {
               "defined": {
@@ -4274,21 +3228,7 @@
             "type": "u8"
           },
           {
-            "name": "utilization_limit_block_borrowing_above_pct",
-            "docs": [
-              "Utilization (in percentage) above which borrowing is blocked. 0 to disable."
-            ],
-            "type": "u8"
-          },
-          {
-            "name": "autodeleverage_enabled",
-            "docs": [
-              "Whether this reserve should be subject to auto-deleveraging after deposit or borrow limit is",
-              "crossed.",
-              "Besides this flag, the lending market's flag also needs to be enabled (logical `AND`).",
-              "**NOTE:** the manual \"target LTV\" deleveraging (enabled by the risk council for individual",
-              "obligations) is NOT affected by this flag."
-            ],
+            "name": "utilization_limit_block_borrowing_above",
             "type": "u8"
           },
           {
@@ -4296,7 +3236,7 @@
             "type": {
               "array": [
                 "u8",
-                1
+                2
               ]
             }
           },
@@ -4323,14 +3263,6 @@
                 32
               ]
             }
-          },
-          {
-            "name": "deleveraging_bonus_increase_bps_per_day",
-            "docs": [
-              "The rate at which the deleveraging-related liquidation bonus increases, in bps per day.",
-              "Only relevant when `autodeleverage_enabled == 1`, and must not be 0 in such case."
-            ],
-            "type": "u64"
           }
         ]
       }
@@ -4461,17 +3393,17 @@
             "type": "u64"
           },
           {
-            "name": "deposit_limit_crossed_timestamp",
+            "name": "deposit_limit_crossed_slot",
             "docs": [
-              "Timestamp when the last refresh reserve detected that the liquidity amount is above the deposit cap. When this threshold is crossed, then redemptions (auto-deleverage) are enabled.",
+              "Timestamp in slots when the last refresh reserve detected that the liquidity amount is above the deposit cap. When this threshold is crossed, then redemptions (auto-deleverage) are enabled.",
               "If the threshold is not crossed, then the timestamp is set to 0"
             ],
             "type": "u64"
           },
           {
-            "name": "borrow_limit_crossed_timestamp",
+            "name": "borrow_limit_crossed_slot",
             "docs": [
-              "Timestamp when the last refresh reserve detected that the borrowed amount is above the borrow cap. When this threshold is crossed, then redemptions (auto-deleverage) are enabled.",
+              "Timestamp in slots when the last refresh reserve detected that the borrowed amount is above the borrow cap. When this threshold is crossed, then redemptions (auto-deleverage) are enabled.",
               "If the threshold is not crossed, then the timestamp is set to 0"
             ],
             "type": "u64"
@@ -5022,13 +3954,6 @@
           },
           {
             "name": "autodeleverage_enabled",
-            "docs": [
-              "Whether the obligations on this market should be subject to auto-deleveraging after deposit",
-              "or borrow limit is crossed.",
-              "Besides this flag, the particular reserve's flag also needs to be enabled (logical `AND`).",
-              "**NOTE:** the manual \"target LTV\" deleveraging (enabled by the risk council for individual",
-              "obligations) is NOT affected by this flag."
-            ],
             "type": "u8"
           },
           {
@@ -5073,16 +3998,11 @@
             "type": "u64"
           },
           {
-            "name": "reserved0",
+            "name": "global_unhealthy_borrow_value",
             "docs": [
-              "[DEPRECATED] Global maximum unhealthy borrow value allowed for any obligation"
+              "Global maximum unhealthy borrow value allowed for any obligation"
             ],
-            "type": {
-              "array": [
-                "u8",
-                8
-              ]
-            }
+            "type": "u64"
           },
           {
             "name": "global_allowed_borrow_value",
@@ -5143,10 +4063,7 @@
             "type": "u128"
           },
           {
-            "name": "min_value_skip_liquidation_ltv_checks",
-            "docs": [
-              "Minimum value to enforce smallest ltv priority checks on the collateral reserves on liquidation"
-            ],
+            "name": "min_value_skip_liquidation_ltv_bf_checks",
             "type": "u64"
           },
           {
@@ -5162,26 +4079,11 @@
             }
           },
           {
-            "name": "min_value_skip_liquidation_bf_checks",
-            "docs": [
-              "Minimum value to enforce highest borrow factor priority checks on the debt reserves on liquidation"
-            ],
-            "type": "u64"
-          },
-          {
-            "name": "individual_autodeleverage_margin_call_period_secs",
-            "docs": [
-              "Time (in seconds) that must pass before liquidation is allowed on an obligation that has",
-              "been individually marked for auto-deleveraging (by the risk council)."
-            ],
-            "type": "u64"
-          },
-          {
             "name": "padding1",
             "type": {
               "array": [
                 "u64",
-                171
+                173
               ]
             }
           }
@@ -5231,6 +4133,7 @@
           {
             "name": "deposits",
             "docs": [
+              "TODO: Does this break the stack size when copied onto the stack, if too big?",
               "Deposited collateral for the obligation, unique by deposit reserve address"
             ],
             "type": {
@@ -5362,19 +4265,11 @@
             "type": "u8"
           },
           {
-            "name": "autodeleverage_target_ltv_pct",
-            "docs": [
-              "A target LTV set by the risk council when marking this obligation for deleveraging.",
-              "Only effective when `deleveraging_margin_call_started_slot != 0`."
-            ],
-            "type": "u8"
-          },
-          {
             "name": "reserved",
             "type": {
               "array": [
                 "u8",
-                6
+                7
               ]
             }
           },
@@ -5383,19 +4278,11 @@
             "type": "u64"
           },
           {
-            "name": "autodeleverage_margin_call_started_timestamp",
-            "docs": [
-              "A timestamp at which the risk council most-recently marked this obligation for deleveraging.",
-              "Zero if not currently subject to deleveraging."
-            ],
-            "type": "u64"
-          },
-          {
             "name": "padding3",
             "type": {
               "array": [
                 "u64",
-                125
+                126
               ]
             }
           }
@@ -5640,7 +4527,7 @@
             "type": {
               "array": [
                 "u64",
-                116
+                117
               ]
             }
           },

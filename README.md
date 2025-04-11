@@ -22,7 +22,7 @@ cd array-protocol
 ```
 
 2. Make sure anchor version is 0.30.1 on specific commit:
-avm install 6fbfc40
+avm install 0.31.0
 
 3. Build the program:
 ```bash
@@ -82,3 +82,6 @@ This project is licensed under the terms specified in the LICENSE file.
 ## Contact
 
 For questions and support, please open an issue in the GitHub repository.
+
+
+need direnv

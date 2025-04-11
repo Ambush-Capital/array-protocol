@@ -1,40 +1,55 @@
-use crate::state::{TokenVault, User};
+use crate::state::{ProgramState, Size, SupportedTokenVault, User, UserTokenVault};
 use anchor_lang::prelude::*;
-use anchor_spl::token::{Mint, Token, TokenAccount};
+use anchor_spl::token::Token;
+use anchor_spl::token_interface::{Mint, TokenAccount};
 
 /// Accounts for `init_token_vault`.
 #[derive(Accounts)]
 #[instruction(vault_index: u16)]
 pub struct InitUserTokenVault<'info> {
+    // user's signer account
     #[account(mut)]
-    pub authority: Signer<'info>,
+    pub signer: Signer<'info>,
 
     /// TokenVault metadata
     #[account(
-        init,
-        payer = authority,
-        // 8 + 32 + 32 + 32 + 32 + 16 = 152 => plus buffer = 160
-        space = 160,
-        seeds = [b"vault".as_ref(), &vault_index.to_le_bytes()],
+        seeds = [b"token_vault".as_ref(), vault_index.to_le_bytes().as_ref()],
         bump
     )]
-    pub token_vault: AccountLoader<'info, TokenVault>,
-
-    #[account(owner = token_program.key())]
-    pub token_vault_mint: Account<'info, Mint>,
+    pub token_vault: Box<Account<'info, SupportedTokenVault>>,
 
     #[account(
         init,
-        seeds = [b"user_vault_account".as_ref(), authority.key().as_ref(), &vault_index.to_le_bytes()],
+        seeds = [b"user_vault".as_ref(), user_state.key().as_ref(), vault_index.to_le_bytes().as_ref()],
         bump,
-        payer = authority,
-        token::mint = token_vault_mint,
-        token::authority = token_vault
+        payer = signer,
+        space = UserTokenVault::SIZE,
     )]
-    pub token_vault_account: Account<'info, TokenAccount>,
+    pub user_token_vault: Box<Account<'info, UserTokenVault>>,
+
+    #[account(
+        init,
+        payer = signer,
+        token::mint = token_vault_mint,
+        token::authority = user_state,
+        token::token_program = token_program,
+        seeds = [b"user_vault_account".as_ref(), user_state.key().as_ref(), vault_index.to_le_bytes().as_ref()],
+        bump,
+    )]
+    pub user_token_vault_account: Box<InterfaceAccount<'info, TokenAccount>>,
+
+    /// CHECK: i am just testing
+    #[account(mut)]
+    pub user_state: Box<Account<'info, User>>,
 
     #[account(mut)]
-    pub user_state: Account<'info, User>,
+    pub state: Box<Account<'info, ProgramState>>,
+
+    #[account(owner = token_program.key())]
+    pub token_vault_mint: InterfaceAccount<'info, Mint>,
+
+    /// CHECK: program signer
+    pub array_signer: AccountInfo<'info>,
 
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
@@ -42,38 +57,20 @@ pub struct InitUserTokenVault<'info> {
 }
 
 /// Handler for `init_user_token_vault`.
+/// Initializes a new user UserTokenVault and TokenAccount for that vault for the user.
 pub fn handle_init_user_token_vault(
     ctx: Context<InitUserTokenVault>,
     vault_index: u16,
 ) -> Result<()> {
-    let mut vault_state = ctx.accounts.token_vault.load_init()?;
-    vault_state.vault = ctx.accounts.token_vault_account.key();
-    vault_state.mint = ctx.accounts.token_vault_mint.key();
-    vault_state.balance = 0;
+    msg!(
+        "Initializing user token vault for vault index: {}",
+        vault_index
+    );
 
-    let user_state = &mut ctx.accounts.user_state;
-
-    // Check if user already has this vault in positions, if not, store it
-    let mut found_slot = false;
-    for pos in user_state.positions.iter_mut() {
-        if pos.vault_index == vault_index {
-            // Vault already exists for user, do nothing
-            found_slot = true;
-            break;
-        }
-    }
-
-    if !found_slot {
-        // Find an empty slot in user.positions and add the new vault entry
-        for pos in user_state.positions.iter_mut() {
-            if pos.user_vault == Pubkey::default() {
-                pos.vault_index = vault_index;
-                pos.user_vault = ctx.accounts.token_vault_account.key();
-                pos.balance = 0; // Start with zero balance
-                break;
-            }
-        }
-    }
+    let user_token_vault = &mut ctx.accounts.user_token_vault;
+    user_token_vault.mint = ctx.accounts.token_vault.mint;
+    user_token_vault.deposited_amount = 0;
+    user_token_vault.token_vault_index = vault_index;
 
     Ok(())
 }

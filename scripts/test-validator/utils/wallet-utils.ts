@@ -8,6 +8,7 @@ import { CONSTANTS } from './connection-utils';
 export const loadWalletKeypair = async (): Promise<Keypair> => {
     // Try to load from KEYPAIR_PATH environment variable first
     const keypairPath = process.env.KEYPAIR_PATH;
+    console.log("keypairPath", keypairPath);
     if (keypairPath && fs.existsSync(keypairPath)) {
         try {
             console.log(`${UI.loading} Loading keypair from path: ${keypairPath}`);

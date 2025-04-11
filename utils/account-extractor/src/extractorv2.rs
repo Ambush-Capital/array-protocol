@@ -99,9 +99,11 @@ impl AccountExtractor2 {
             self.extract_program_accounts(program_id_str).await?;
         } else if let Some(account_address) = &self.config.account_address {
             // Extract single account
+            info!("Extracting single account: {}", account_address);
             self.extract_single_account(account_address, true).await?;
         } else if let Some(wallet_address) = &self.config.wallet_address {
             // Extract token accounts for wallet
+            info!("Extracting token accounts for wallet: {}", wallet_address);
             self.extract_usdc_token_accounts(wallet_address).await?;
             self.extract_single_account(wallet_address, false).await?;
         }
@@ -455,7 +457,7 @@ impl AccountExtractor2 {
                 "owner": account.owner.to_string(),
                 "executable": account.executable,
                 "rentEpoch": account.rent_epoch,
-                "space": account.data.len()
+                "space": account.data.len(),
             }
         })
     }

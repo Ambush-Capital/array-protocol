@@ -2,6 +2,38 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "anchor-build",
+      "type": "shell",
+      "command": "anchor build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": [
+        {
+          "owner": "rust",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.*):(\\d+):(\\d+):\\s+(\\d+):(\\d+)\\s+(warning|error):\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "endLine": 4,
+            "endColumn": 5,
+            "severity": 6,
+            "message": 7
+          }
+        }
+      ]
+    },
+    {
       "label": "build-account-extractor",
       "type": "shell",
       "command": "cd utils/account-extractor && cargo build",

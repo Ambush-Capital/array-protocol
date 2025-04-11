@@ -6,7 +6,12 @@ skip-lint = false
 
 [programs.localnet]
 array_protocol = "5jNZph2CQjoQcaru3fjkDvXDmMGpnrNAG8CmTyaTdnm9"
-drift = "dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH"
+drift = "DftNc7gwihkEEwQRpu4bV89N18xpNEuBVg7YkhTZZhVo"
+
+[programs.devnet]
+array_protocol = "5jNZph2CQjoQcaru3fjkDvXDmMGpnrNAG8CmTyaTdnm9"
+drift = "dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH"  # Drift devnet program ID
+klend = "KLend42TYDg8GDzrMpRKRs8V71XphiQimj7KeJBLh6M"  # KLend devnet program ID
 
 [registry]
 url = "https://api.apr.dev"
@@ -16,4 +21,4 @@ cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/*.ts"

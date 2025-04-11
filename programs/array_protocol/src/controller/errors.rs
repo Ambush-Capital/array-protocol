@@ -8,7 +8,7 @@ pub enum VaultError {
     #[msg("Underflow occurred")]
     Underflow,
 
-    #[msg("No free position slot found")]
+    #[msg("No free position slot found!")]
     NoPositionSlot,
 
     #[msg("Invalid vault index for this position")]

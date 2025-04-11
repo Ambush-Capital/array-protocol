@@ -8,9 +8,9 @@ exclude = [
 resolver = "2"
 
 [profile.release]
-overflow-checks = true
 lto = "fat"
 codegen-units = 1
+overflow-checks = true
 
 [profile.release.build-override]
 opt-level = 3

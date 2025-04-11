@@ -1,31 +1,28 @@
-{
-  "rust-analyzer.cargo.features": "all",
-  "rust-analyzer.checkOnSave.command": "clippy",
-  "rust-analyzer.checkOnSave.extraArgs": [
-    // Empty, to allow warnings to be shown
-  ],
-  "rust-analyzer.diagnostics.disabled": [
-    "proc-macro-derive-resolution-fallback"
-  ],
-  "rust-analyzer.cargo.allFeatures": true,
-  "rust-analyzer.procMacro.enable": true,
-  "rust-analyzer.cargo.loadOutDirsFromCheck": true,
-  "rust-analyzer.lens.enable": true,
-  "rust-analyzer.lens.methodReferences": true,
-  "rust-analyzer.lens.references": true,
-  "rust-analyzer.lens.implementations": true,
-  "editor.formatOnSave": true,
-  "rust-analyzer.check.command": "clippy",
-  "rust-analyzer.check.extraArgs": [
-    // Empty, to allow warnings to be shown
-  ],
-  "rust-analyzer.server.extraEnv": {
-    "RUSTFLAGS": ""
-  },
-  "rust-analyzer.linkedProjects": [
-    "./utils/account-extractor/Cargo.toml"
-  ],
-  "rust-analyzer.diagnostics.experimental.enable": true,
-  "rust-analyzer.diagnostics.warningsAsInfo": false,
-  "rust-analyzer.diagnostics.warningsAsHint": false
+{ // Separate configuration for the account-extractor project
+    // Default rust-analyzer settings for the main project
+    "rust-analyzer.cargo.features": [],
+    "rust-analyzer.cargo.allFeatures": false,
+    "rust-analyzer.cargo.buildScripts.enable": true,
+    "rust-analyzer.cargo.buildScripts.overrideCommand": null,
+    "rust-analyzer.cargo.extraArgs": [],
+    // Project-specific settings for the account-extractor
+    "[rust]": {
+        "editor.defaultFormatter": "rust-lang.rust-analyzer"
+    },
+    "rust-analyzer.linkedProjects": [
+        "${workspaceFolder}/Cargo.toml",
+        "${workspaceFolder}/utils/account-extractor/Cargo.toml"
+    ],
+    // Path-specific overrides for account-extractor
+    "rust-analyzer.files.excludeDirs": [
+        "utils/account-extractor"
+    ],
+    "[account-extractor]": {
+        "rust-analyzer.linkedProjects": [
+            "${workspaceFolder}/utils/account-extractor/Cargo.toml"
+        ],
+        "rust-analyzer.cargo.extraArgs": [
+            "--manifest-path=${workspaceFolder}/utils/account-extractor/Cargo.toml"
+        ]
+    },
 }

@@ -11,6 +11,7 @@ source "$PROJECT_ROOT/.env"
 # Set fixture paths
 DRIFT_FIXTURES_DIR="$PROJECT_FIXTURES_DIR/$DRIFT_OUTPUT_DIR"
 USDC_FIXTURES_DIR="$PROJECT_FIXTURES_DIR/$USDC_OUTPUT_DIR"
+TOKEN_PROGRAM_LOCATION="$PROJECT_FIXTURES_DIR/programs/spl_token.so"
 
 # Check if fixtures directory exists
 if [ ! -d "$DRIFT_FIXTURES_DIR" ]; then
@@ -36,7 +37,7 @@ solana-test-validator \
     --clone JCNCMFXo5M5qwUPg2Utu1u6YWp3MbygxqBsBeXXJfrw \
     --clone "$DRIFT_PROGRAM_ID_MAINNET" \
     --clone EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v \
-    --clone TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA \
+    --bpf-program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA "$TOKEN_PROGRAM_LOCATION"\
     --clone 11111111111111111111111111111111 \
     --reset \
     --ledger \
